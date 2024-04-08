@@ -1,5 +1,9 @@
 # meal-finder-dom-starter
 
+### Meal API
+
+[https://www.themealdb.com/](https://www.themealdb.com/)
+
 ### List of meals after typing search term. For instance, "egg":
 
 ![meals](./images/meals.png)
