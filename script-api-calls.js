@@ -1,5 +1,7 @@
 // Check out for script2 and script3 for different solutions
 
+import { getMealsDataById, getMealsDataByQueryTxt } from "./api-calls.js";
+
 const search = document.getElementById("search"),
   submit = document.getElementById("submit"),
   random = document.getElementById("random"),
@@ -7,29 +9,22 @@ const search = document.getElementById("search"),
   resultHeading = document.getElementById("result-heading"),
   single_mealEl = document.getElementById("single-meal");
 
-const randomUrl = "https://www.themealdb.com/api/json/v1/1/random.php";
-const searchUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=";
+window.fetchMealDataById = fetchMealDataById;
 
 function searchMeal(e) {
   e.preventDefault();
 
-  //   clear single meal content
+  // Clear single meal content
   single_mealEl.innerHTML = "";
 
-  //   console.log(search.value);
-  //   console.log(e.target.search.value);
-
-  // get search query string
+  // Get search query string
+  // const queryStr = e.target.search.value.trim();
   const queryStr = search.value.trim();
 
   if (queryStr) {
-    fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${queryStr}`)
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log(data);
-        addMealsToDOM(data.meals, queryStr);
-      })
-      .catch((err) => console.log(err));
+    getMealsDataByQueryTxt(queryStr).then((data) => {
+      addMealsToDOM(data.meals, queryStr);
+    });
   } else {
     alert("Please enter a search text...");
   }
@@ -44,43 +39,32 @@ function addMealsToDOM(meals, queryStr) {
 
     mealsEl.innerHTML = meals
       .map(({ strMeal, strMealThumb, idMeal }) => {
-        // const { strMeal, strMealThumb } = meal;
-
         const singleMeal = `
             <div class="meal">
                 <img
                     src="${strMealThumb}"
                     alt="${strMeal}"
                 />
-                <div onclick="getMealById(${idMeal})" class="meal-info">
+                <div onclick="fetchMealDataById(${idMeal})" class="meal-info">
                     <h3>${strMeal}</h3>
                 </div>
             </div>
         `;
         return singleMeal;
       })
-      .join(""); // ["<div></div>", "<div></div>", "<div></div>" ...].join("")
+      .join("");
   }
 
-  //   clear search input
+  // Clear search input
   search.value = "";
 }
 
-function getMealById(mealId) {
-  fetchData(mealId);
-}
+function fetchMealDataById(id) {
+  getMealsDataById(id).then((data) => {
+    const meal = data.meals[0];
 
-function fetchData(id) {
-  const requestUrl = id ? searchUrl + id : randomUrl;
-
-  fetch(requestUrl)
-    .then((res) => res.json())
-    .then((data) => {
-      const meal = data.meals[0];
-
-      addMealToDOM(meal);
-    })
-    .catch((err) => console.log(err));
+    addMealToDOM(meal);
+  });
 }
 
 function getRandomMeal() {
@@ -88,7 +72,7 @@ function getRandomMeal() {
   mealsEl.innerHTML = "";
   resultHeading.innerHTML = "";
 
-  fetchData();
+  fetchMealDataById();
 }
 
 function addMealToDOM(meal) {

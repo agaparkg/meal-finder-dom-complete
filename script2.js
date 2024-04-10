@@ -1,4 +1,10 @@
-// Check out for script2 and script3 for different solutions
+// This is script2 OPTION to display a single meal info WITHOUT
+// having onclick="getMealById(${idMeal})" attached to each meal,
+// but it will contain data-mealID="${idMeal}" instead in each meal:
+
+/* <div class="meal-info" data-mealID="${meal.idMeal}">
+  <h3>${strMeal}</h3>
+</div> */
 
 const search = document.getElementById("search"),
   submit = document.getElementById("submit"),
@@ -52,7 +58,7 @@ function addMealsToDOM(meals, queryStr) {
                     src="${strMealThumb}"
                     alt="${strMeal}"
                 />
-                <div onclick="getMealById(${idMeal})" class="meal-info">
+                <div class="meal-info" data-mealID="${idMeal}">
                     <h3>${strMeal}</h3>
                 </div>
             </div>
@@ -64,10 +70,6 @@ function addMealsToDOM(meals, queryStr) {
 
   //   clear search input
   search.value = "";
-}
-
-function getMealById(mealId) {
-  fetchData(mealId);
 }
 
 function fetchData(id) {
@@ -189,3 +191,17 @@ function addMealToDOM(meal) {
 
 submit.addEventListener("submit", searchMeal);
 random.addEventListener("click", getRandomMeal);
+
+mealsEl.addEventListener("click", (e) => {
+  const isHeading = e.target instanceof HTMLHeadingElement; // This will return true or false
+
+  let mealInfo;
+
+  if (isHeading) {
+    mealInfo = e.target.parentElement;
+  } else {
+    mealInfo = e.target;
+  }
+  const mealID = mealInfo.getAttribute("data-mealid");
+  fetchData(mealID);
+});

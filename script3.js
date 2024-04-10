@@ -1,4 +1,6 @@
-// Check out for script2 and script3 for different solutions
+// This is script3 OPTION which combines multiple functions
+// into a single function.
+// Search for `getMealByIdOrRandom` function to get more info.
 
 const search = document.getElementById("search"),
   submit = document.getElementById("submit"),
@@ -52,7 +54,7 @@ function addMealsToDOM(meals, queryStr) {
                     src="${strMealThumb}"
                     alt="${strMeal}"
                 />
-                <div onclick="getMealById(${idMeal})" class="meal-info">
+                <div onclick="getMealByIdOrRandom(${idMeal})" class="meal-info">
                     <h3>${strMeal}</h3>
                 </div>
             </div>
@@ -66,29 +68,28 @@ function addMealsToDOM(meals, queryStr) {
   search.value = "";
 }
 
-function getMealById(mealId) {
-  fetchData(mealId);
-}
+function getMealByIdOrRandom(id) {
+  let requestUrl;
 
-function fetchData(id) {
-  const requestUrl = id ? searchUrl + id : randomUrl;
+  if (id && !(id instanceof Event)) {
+    requestUrl = searchUrl + id;
+  } else {
+    // clear meals and heading
+    mealsEl.innerHTML = "";
+    resultHeading.innerHTML = "";
+
+    requestUrl = randomUrl;
+  }
 
   fetch(requestUrl)
     .then((res) => res.json())
     .then((data) => {
+      console.log(data);
       const meal = data.meals[0];
 
       addMealToDOM(meal);
     })
     .catch((err) => console.log(err));
-}
-
-function getRandomMeal() {
-  // clear meals and heading
-  mealsEl.innerHTML = "";
-  resultHeading.innerHTML = "";
-
-  fetchData();
 }
 
 function addMealToDOM(meal) {
@@ -188,4 +189,5 @@ function addMealToDOM(meal) {
 }
 
 submit.addEventListener("submit", searchMeal);
-random.addEventListener("click", getRandomMeal);
+random.addEventListener("click", getMealByIdOrRandom);
+// random.addEventListener("click", () => getMealByIdOrRandom());
